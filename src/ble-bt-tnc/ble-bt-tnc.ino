@@ -61,16 +61,17 @@ class MyCallbacks : public BLECharacteristicCallbacks
   // Data was written from the phone to the adapter
   void onWrite(BLECharacteristic *pCharacteristic)
   {
-    std::string rxValue = pCharacteristic->getValue();
-    if (rxValue.length() > 0)
-    {
+    if (pCharacteristic->getLength() > 0)
+    {   
+        int valLength = pCharacteristic->getLength();
+        byte *pValData = pCharacteristic->getData();
         Serial.println("Received Value from aprs.fi App: ");
-        for (int i = 0; i < rxValue.length(); i++){
-          Serial.print(rxValue[i]);
+        for (int i = 0; i < valLength; i++){
+          Serial.print(char(*(pValData+i)));
         }
         Serial.println("...");
         Serial.println("Send received values via UART");
-        SerialPort.write(pCharacteristic->getData(), rxValue.length());
+        SerialPort.write(pValData, valLength);
     }
   }
 };
